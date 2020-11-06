@@ -580,7 +580,7 @@ MainWindow::MainWindow(const ClipboardBrowserSharedPtr &sharedData, QWidget *par
 
 bool MainWindow::browseMode() const
 {
-    return !ui->searchBar->isVisible();
+    return ui->searchBar->isHidden();
 }
 
 void MainWindow::exit()
@@ -3655,8 +3655,11 @@ bool MainWindow::importDataFrom(const QString &fileName, ImportOptions options)
     QDataStream in(&file);
     in.setVersion(QDataStream::Qt_4_7);
 
-    return importDataV4(&in, options)
-        || importDataV3(&in, options);
+    if ( importDataV4(&in, options) )
+        return true;
+
+    file.seek(0);
+    return importDataV3(&in, options);
 }
 
 bool MainWindow::exportAllData(const QString &fileName)
